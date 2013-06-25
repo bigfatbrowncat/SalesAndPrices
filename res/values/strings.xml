@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SalesAndPrices</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="i_want_to_buy">I want to buy:</string>
+    <string name="add_to_cart_button">Add to cart</string>
+    <string name="this_is_exclusive">This product is exclusive</string>
+    <string name="this_product_is_new">This product is a new offer</string>
+    <string name="pcs">pcs.</string>
+
+</resources>
