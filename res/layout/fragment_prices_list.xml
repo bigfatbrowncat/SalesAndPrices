@@ -4,9 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <ListView android:id="@+id/prices_list_view"
+    <com.example.salesandprices.PricesListView android:id="@+id/prices_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-        
-    </ListView>
+    </com.example.salesandprices.PricesListView>
 </LinearLayout>

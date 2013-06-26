@@ -3,7 +3,6 @@ package com.example.salesandprices;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -21,7 +20,7 @@ public class PricesDataManager {
 
 	protected Product[] readProductsFromDataFile() throws IOException,
 			XmlPullParserException, DataFileException {
-		// Opening the dataset file
+		// Opening the data file
 		AssetManager assetManager = context.getAssets();
 		InputStream datasetInputStream = assetManager.open(dataFileName);
 
@@ -55,7 +54,7 @@ public class PricesDataManager {
 
 							for (int i = 0; i < xmlParser.getAttributeCount(); i++) {
 								if (xmlParser.getAttributeName(i).equals("id")) {
-									newProd.setId(Integer.parseInt(xmlParser
+									newProd.setId(Long.parseLong(xmlParser
 											.getAttributeValue(i)));
 									idSet = true;
 								} else if (xmlParser.getAttributeName(i)
@@ -144,29 +143,26 @@ public class PricesDataManager {
 		}
 	}
 
-	public Product[] getAllProductsListWithShortDescriptions()
-			throws PricesDatabaseException {
-		return helper.getAllProductsListWithShortDescriptions();
-	}
-
-	public Product[] getExclusiveProductsListWithShortDescriptions()
-			throws PricesDatabaseException {
-		return helper.getExclusiveProductsListWithShortDescriptions();
-	}
-
-	public Product[] getNewProductsListWithShortDescriptions()
-			throws PricesDatabaseException {
-		ArrayList<Product> allProducts = new ArrayList<Product>(Arrays.asList(helper.getAllProductsListWithShortDescriptions()));
-		for (int i = allProducts.size() - 1; i >= 0; i--)
-		{
-			if (!allProducts.get(i).isNew()) allProducts.remove(i);
-		}
-		
-		return allProducts.toArray(new Product[] {});
-	}
-	
-	public void close() {
+	public void close()
+	{
 		helper.close();
 	}
+	
+	public Long[] getAllProductIds() throws PricesDatabaseException
+	{
+		return helper.getAllProductIds();
+	}
+	public Long[] getExclusiveProductIds() throws PricesDatabaseException
+	{
+		return helper.getExclusiveProductIds();
+	}
 
+	public Long[] getNewProductIds()	throws PricesDatabaseException {
+		Date olderDate = new Date((new Date()).getTime() - GlobalOptions.NEW_PRODUCT_TIMESPAN); 
+		return helper.getProductIdsNewerThan(olderDate);
+	}
+
+	public Product getProductById(long id) throws PricesDatabaseException {
+		return helper.getProductById(id);
+	}
 }

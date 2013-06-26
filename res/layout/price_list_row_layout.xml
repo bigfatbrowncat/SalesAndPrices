@@ -20,7 +20,7 @@
         android:layout_alignTop="@+id/product_icon_image_view"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="2dp"
-        android:layout_toLeftOf="@+id/price_text_view"
+        android:layout_toLeftOf="@+id/product_price_text_view"
         android:layout_toRightOf="@+id/product_icon_image_view"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -32,8 +32,8 @@
         android:layout_alignLeft="@+id/product_name"
         android:layout_alignParentBottom="true"
         android:layout_below="@+id/product_name"
-        android:layout_marginTop="0dp"
         android:layout_marginRight="5dp"
+        android:layout_marginTop="0dp"
         android:layout_toLeftOf="@+id/crown_image_view"
         android:text="TextView" />
 
@@ -41,26 +41,26 @@
         android:id="@+id/product_price_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/product_description"
         android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/product_name"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <ImageView
-        android:id="@+id/this_is_new_image_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/product_icon_image_view"
-        android:layout_alignRight="@+id/product_price_text_view"
-        android:baselineAlignBottom="false"
-        android:src="@drawable/star" />
 
     <ImageView
         android:id="@+id/crown_image_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/this_is_new_image_view"
-        android:layout_toLeftOf="@+id/this_is_new_image_view"
+        android:layout_alignRight="@+id/product_price_text_view"
+        android:layout_below="@+id/product_price_text_view"
         android:src="@drawable/crown" />
+
+    <ImageView
+        android:id="@+id/this_is_new_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/product_price_text_view"
+        android:layout_toLeftOf="@+id/crown_image_view"
+        android:baselineAlignBottom="false"
+        android:src="@drawable/star" />
 
 </RelativeLayout>

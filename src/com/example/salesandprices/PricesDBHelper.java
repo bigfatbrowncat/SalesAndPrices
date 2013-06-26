@@ -1,6 +1,5 @@
 package com.example.salesandprices;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import android.content.ContentValues;
@@ -131,7 +130,7 @@ public class PricesDBHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	public Product getProduct(long id) throws PricesDatabaseException
+	public Product getProductById(long id) throws PricesDatabaseException
 	{
 		SQLiteDatabase db = getReadableDatabase();
 		try
@@ -168,27 +167,30 @@ public class PricesDBHelper extends SQLiteOpenHelper {
 	}
 	
 	
-	public Product[] getAllProductsListWithShortDescriptions() throws PricesDatabaseException
+	public Long[] getProductIdsBy(String selection) throws PricesDatabaseException
 	{
 		SQLiteDatabase db = getReadableDatabase();
 		try
 		{
-			Cursor cur = db.query(TABLE_PRICES, new String[] { COLUMN_ID, COLUMN_CREATION_DATETIME, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_PRICE, COLUMN_EXCLUSIVE }, null, null, null, null, null);
+			Cursor cur = db.query(TABLE_PRICES, new String[] { COLUMN_ID }, selection, null, null, null, null);
 			try
 			{
 				if (cur != null)
 				{
+					Long[] res = new Long[cur.getCount()];
+					
 					cur.moveToFirst();
 					
-					ArrayList<Product> res = new ArrayList<Product>();
+					int i = 0;
 					while (!cur.isAfterLast())
 					{
-						res.add(new Product(cur.getLong(0), new Date(cur.getLong(1)), cur.getString(2), cur.getString(3), null, cur.getInt(4), cur.getInt(5) > 0));
+						res[i] = cur.getLong(0);
 						cur.moveToNext();
+						i++;
 					}
 					cur.close();
 					
-					return res.toArray(new Product[] {});
+					return res;
 				}
 				else
 				{
@@ -206,42 +208,18 @@ public class PricesDBHelper extends SQLiteOpenHelper {
 		}
 	}
 	
-	public Product[] getExclusiveProductsListWithShortDescriptions() throws PricesDatabaseException
+	public Long[] getAllProductIds() throws PricesDatabaseException
 	{
-		SQLiteDatabase db = getReadableDatabase();
-		try
-		{
-			Cursor cur = db.query(TABLE_PRICES, new String[] { COLUMN_ID, COLUMN_CREATION_DATETIME, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_PRICE, COLUMN_EXCLUSIVE }, 
-			                      COLUMN_EXCLUSIVE + " > 0", null, null, null, null);
-			try
-			{
-				if (cur != null)
-				{
-					cur.moveToFirst();
-					
-					ArrayList<Product> res = new ArrayList<Product>();
-					while (!cur.isAfterLast())
-					{
-						res.add(new Product(cur.getLong(0), new Date(cur.getLong(1)), cur.getString(2), cur.getString(3), null, cur.getInt(4), cur.getInt(5) > 0));
-						cur.moveToNext();
-					}
-					cur.close();
-					
-					return res.toArray(new Product[] {});
-				}
-				else
-				{
-					throw new PricesDatabaseException("Can't create a cursor");
-				}
-			}
-			finally
-			{
-				if (cur != null) cur.close();
-			}
-		}
-		finally
-		{
-			db.close();
-		}
+		return getProductIdsBy(null);
+	}
+
+	public Long[] getExclusiveProductIds() throws PricesDatabaseException
+	{
+		return getProductIdsBy(COLUMN_EXCLUSIVE + " > 0");
+	}
+	
+	public Long[] getProductIdsNewerThan(Date moment) throws PricesDatabaseException
+	{
+		return getProductIdsBy(COLUMN_CREATION_DATETIME + " > " + moment.getTime());
 	}
 }

@@ -2,7 +2,7 @@ package com.example.salesandprices;
 
 import java.util.Date;
 
-public class Product {
+public class Product /*implements Parcelable*/ {
 	private long id;
 	private Date creationDateTime;
 	private String name;
@@ -11,6 +11,40 @@ public class Product {
 	private int price;
 	private boolean exclusive;
 
+
+/*    public static final Parcelable.Creator<Product> CREATOR
+            = new Parcelable.Creator<Product>() {
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
+        }
+
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeLong(id);
+		dest.writeLong(creationDateTime.getTime());
+		dest.writeString(name);
+		dest.writeString(description);
+		dest.writeString(descrCut);
+		dest.writeInt(price);
+		dest.writeByte((byte) (exclusive ? 1 : 0));
+	}
+	
+	public Product(Parcel in)
+	{
+		id = in.readLong();
+		creationDateTime = new Date(in.readLong());
+		name = in.readString();
+		description = in.readString();
+		descrCut = in.readString();
+		price = in.readInt();
+		exclusive = in.readByte() > 0;
+	}*/
+	
 	public Product(long id, Date creationDateTime, String name, String description, String descrCut, int price, boolean exclusive) {
 		this.id = id;
 		this.creationDateTime = creationDateTime;
@@ -85,7 +119,13 @@ public class Product {
 
 	public boolean isNew()
 	{
-		long diffInMinutes = ((new Date()).getTime() - creationDateTime.getTime()) / (1000 * 60);
-		return diffInMinutes < 10;
+		long diff = (new Date()).getTime() - creationDateTime.getTime();
+		return diff < GlobalOptions.NEW_PRODUCT_TIMESPAN;
 	}
+
+/*	@Override
+	public int describeContents() {
+		return 0;
+	}*/
+
 }

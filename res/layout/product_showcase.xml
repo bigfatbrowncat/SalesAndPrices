@@ -8,97 +8,102 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin" >
 
+    <TextView
+        android:id="@+id/product_description_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/product_title_pane"
+        android:layout_marginTop="10dp"
+        android:text="TextView asduhs ifas dfuiasd fuias dfoasdf aso foasdfasiodf ioasdfh asdio f iasdf  sd fsdhfo asdf ioasd fioasdf" />
+
+    <TextView
+        android:id="@+id/product_exclusive_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/product_description_text_view"
+        android:layout_below="@+id/product_description_text_view"
+        android:layout_marginTop="22dp"
+        android:layout_toLeftOf="@+id/product_exclusive_image_view"
+        android:text="@string/this_is_exclusive" />
+
     <ImageView
-        android:id="@+id/imageView1"
+        android:id="@+id/product_exclusive_image_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_launcher" />
+        android:layout_alignBottom="@+id/product_exclusive_text_view"
+        android:layout_alignRight="@+id/product_description_text_view"
+        android:src="@drawable/crown" />
 
-    <EditText
-        android:id="@+id/editText1"
+    <TextView
+        android:id="@+id/product_new_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView3"
-        android:layout_alignRight="@+id/textView2"
-        android:layout_below="@+id/textView3"
-        android:ems="10"
-        android:inputType="number" >
+        android:layout_alignLeft="@+id/product_exclusive_text_view"
+        android:layout_below="@+id/product_exclusive_text_view"
+        android:layout_marginTop="10dp"
+        android:layout_toLeftOf="@+id/product_new_image_view"
+        android:text="@string/this_product_is_new" />
 
-        <requestFocus />
-    </EditText>
+    <ImageView
+        android:id="@+id/product_new_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/product_new_text_view"
+        android:layout_alignLeft="@+id/product_exclusive_image_view"
+        android:src="@drawable/star" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/add_to_cart_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editText1"
-        android:layout_alignRight="@+id/editText1"
-        android:layout_below="@+id/editText1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:text="@string/add_to_cart_button" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/imageView1"
-        android:layout_below="@+id/textView2"
-        android:layout_marginTop="126dp"
+        android:layout_above="@+id/quantity_edit_text"
+        android:layout_alignLeft="@+id/product_new_text_view"
+        android:layout_alignRight="@+id/quantity_edit_text"
         android:text="@string/i_want_to_buy" />
 
-    <TextView
-        android:id="@+id/textView2"
+    <LinearLayout
+        android:id="@+id/product_title_pane"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/imageView1"
-        android:layout_below="@+id/imageView1"
-        android:layout_marginTop="10dp"
-        android:text="TextView asduhs ifas dfuiasd fuias dfoasdf aso foasdfasiodf ioasdfh asdio f iasdf  sd fsdhfo asdf ioasd fioasdf" />
+        android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/textView2"
-        android:layout_alignTop="@+id/imageView1"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@+id/imageView1"
-        android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_launcher" />
 
-    <TextView
-        android:id="@+id/TextView01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_below="@+id/textView2"
-        android:layout_marginTop="22dp"
-        android:layout_toLeftOf="@+id/imageView2"
-        android:text="@string/this_is_exclusive" />
+        <TextView
+            android:id="@+id/product_name_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:text="Large Text is a very very large text which is extremely large"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/TextView01"
-        android:layout_alignRight="@+id/textView2"
-        android:src="@drawable/crown" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/TextView02"
+    <EditText
+        android:id="@+id/quantity_edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/TextView01"
-        android:layout_below="@+id/TextView01"
-        android:layout_marginTop="10dp"
-        android:text="@string/this_product_is_new" />
+        android:layout_above="@+id/add_to_cart_button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="number" >
 
-    <ImageView
-        android:id="@+id/ImageView01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/TextView02"
-        android:layout_alignLeft="@+id/imageView2"
-        android:src="@drawable/crown" />
+        <requestFocus />
+    </EditText>
 
 </RelativeLayout>

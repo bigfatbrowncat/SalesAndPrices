@@ -10,16 +10,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ProductAdapter extends ArrayAdapter<Product> {
+public class ProductAdapter extends ArrayAdapter<Long> {
 
 
 	public ProductAdapter(Context context, int resource,
-			int textViewResourceId, List<Product> objects) {
+			int textViewResourceId, List<Long> objects) {
 		super(context, resource, textViewResourceId, objects);
 	}
 
 	public ProductAdapter(Context context, int resource,
-			int textViewResourceId, Product[] objects) {
+			int textViewResourceId, Long[] objects) {
 		super(context, resource, textViewResourceId, objects);
 	}
 
@@ -28,12 +28,12 @@ public class ProductAdapter extends ArrayAdapter<Product> {
 	}
 
 	public ProductAdapter(Context context, int textViewResourceId,
-			List<Product> objects) {
+			List<Long> objects) {
 		super(context, textViewResourceId, objects);
 	}
 
 	public ProductAdapter(Context context, int textViewResourceId,
-			Product[] objects) {
+			Long[] objects) {
 		super(context, textViewResourceId, objects);
 	}
 
@@ -53,31 +53,43 @@ public class ProductAdapter extends ArrayAdapter<Product> {
 		ImageView crownImageView = (ImageView)rowView.findViewById(R.id.crown_image_view);
 		ImageView starImageView = (ImageView)rowView.findViewById(R.id.this_is_new_image_view);
 		
-		nameTextView.setText(getItem(position).getName());
-		descriptionTextView.setText(getItem(position).getDescription());
-		if (getItem(position).isExclusive())
+		try
 		{
-			crownImageView.setImageResource(R.drawable.crown);
+			PricesDataManager pricesDataManager = new PricesDataManager(getContext());
+			Product currentProduct = pricesDataManager.getProductById(getItem(position));
+			
+			nameTextView.setText(currentProduct.getName());
+			descriptionTextView.setText(currentProduct.getDescription());
+			if (currentProduct.isExclusive())
+			{
+				crownImageView.setImageResource(R.drawable.crown);
+			}
+			else
+			{
+				crownImageView.setImageResource(R.drawable.crown_gray);
+			}
+			
+			if (currentProduct.isNew())
+			{
+				starImageView.setImageResource(R.drawable.star);
+			}
+			else
+			{
+				starImageView.setImageResource(R.drawable.star_gray);
+			}
+			
+			int rub = currentProduct.getPrice() / 100;
+			int kop = currentProduct.getPrice() - rub * 100;
+			
+			priceTextView.setText(rub + "ð. " + kop + "ê.");
+		
+			pricesDataManager.close();
 		}
-		else
+		catch (PricesDatabaseException e)
 		{
-			crownImageView.setImageResource(R.drawable.crown_gray);
+			e.printStackTrace();
 		}
-		
-		if (getItem(position).isNew())
-		{
-			starImageView.setImageResource(R.drawable.star);
-		}
-		else
-		{
-			starImageView.setImageResource(R.drawable.star_gray);
-		}
-		
-		int rub = getItem(position).getPrice() / 100;
-		int kop = getItem(position).getPrice() - rub * 100;
-		
-		priceTextView.setText(rub + "ð. " + kop + "ê.");
-		
+
 		return rowView;
 	}
 }
