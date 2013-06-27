@@ -16,7 +16,7 @@ public class PricesDataManager {
 	private static final String dataFileName = "dataset.xml";
 
 	private Context context;
-	private PricesDBHelper helper;
+	private PricesDatabaseHelper helper;
 
 	protected Product[] readProductsFromDataFile() throws IOException,
 			XmlPullParserException, DataFileException {
@@ -72,8 +72,8 @@ public class PricesDataManager {
 											.getAttributeValue(i));
 								} else if (xmlParser.getAttributeName(i)
 										.equals("price")) {
-									newProd.setPrice(Integer.parseInt(xmlParser
-											.getAttributeValue(i)));
+									newProd.setPrice(new Price(Integer.parseInt(xmlParser
+											.getAttributeValue(i))));
 									priceSet = true;
 								} else if (xmlParser.getAttributeName(i)
 										.equals("exclusive")) {
@@ -125,7 +125,7 @@ public class PricesDataManager {
 
 	public PricesDataManager(Context context) {
 		this.context = context;
-		helper = new PricesDBHelper(context);
+		helper = new PricesDatabaseHelper(context);
 	}
 
 	public void updateDatabaseFromDataFile() throws IOException,
@@ -157,12 +157,34 @@ public class PricesDataManager {
 		return helper.getExclusiveProductIds();
 	}
 
-	public Long[] getNewProductIds()	throws PricesDatabaseException {
+	public Long[] getNewProductIds() throws PricesDatabaseException {
 		Date olderDate = new Date((new Date()).getTime() - GlobalOptions.NEW_PRODUCT_TIMESPAN); 
 		return helper.getProductIdsNewerThan(olderDate);
 	}
 
+	public Long[] getProductIdsInCart() throws PricesDatabaseException
+	{
+		return helper.getProductIdsInCart();
+	}
+	
 	public Product getProductById(long id) throws PricesDatabaseException {
 		return helper.getProductById(id);
+	}
+	
+	public Integer getProductQuantityFromCart(long id) throws PricesDatabaseException {
+		return helper.getProductQuantityFromCart(id);
+	}
+
+	public void deliverCart() {
+		helper.deliverCart();
+	}
+	
+	public void recreateDatabase() {
+		helper.recreateDatabase();
+	}
+
+	public void addToCart(long productId, int quantity) throws PricesDatabaseException {
+		helper.addToCart(productId, quantity);
+		
 	}
 }

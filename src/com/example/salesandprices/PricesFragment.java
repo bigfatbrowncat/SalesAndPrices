@@ -1,7 +1,12 @@
 package com.example.salesandprices;
 
+import com.example.salesandprices.ProductContextMenuDialogFragment.OnAddToCartSelectedListener;
+import com.example.salesandprices.ProductContextMenuDialogFragment.OnShowcaseSelectedListener;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +14,27 @@ import android.view.ViewGroup;
 public class PricesFragment extends Fragment {
 
 	private Long[] productIds;
+	
+	private void showcase(Long productId)
+	{
+		Intent showcaseIntent = new Intent(getActivity(), ProductShowcaseActivity.class);
+		showcaseIntent.putExtra("productId", productId);
+		startActivity(showcaseIntent);
+	}
+	
+	private void addToCart(Long productId)
+	{
+		PricesDataManager pricesDataManager = new PricesDataManager(getActivity());
+		try {
+			
+			pricesDataManager.addToCart(productId, 1);
+			((PriceListActivity)getActivity()).updateData();
+			
+		} catch (PricesDatabaseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -28,27 +54,55 @@ public class PricesFragment extends Fragment {
 		}
 	}
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		
-		View root = inflater.inflate(R.layout.fragment_prices_list, container, false);
-	
-		PricesListView priceList = (PricesListView)root.findViewById(R.id.prices_list_view);
+	protected void updateData()
+	{
+		PricesListView priceList = (PricesListView)getView().findViewById(R.id.prices_list_view);
 		
 		try {
 			if (productIds != null)
 			{
-				ProductAdapter productAdapter = new ProductAdapter(this.getActivity(), R.layout.price_list_row_layout, R.id.product_name, productIds);
+				ProductPriceAdapter productAdapter = new ProductPriceAdapter(this.getActivity(), R.layout.price_list_row_layout, R.id.product_name, productIds);
 				priceList.setAdapter(productAdapter);
+				
+				priceList.setOnShowcaseSelectedListener(new OnShowcaseSelectedListener() {
+					
+					@Override
+					public void onShowcaseSelected(long productId) {
+						showcase(productId);
+					}
+				});
+				
+				priceList.setOnAddToCartSelectedListener(new OnAddToCartSelectedListener() {
+					
+					@Override
+					public void onAddToCart(long productId) {
+						addToCart(productId);
+						
+					}
+				});
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
 		
+		View root = inflater.inflate(R.layout.fragment_price_list, container, false);
+	
+		//updateData();
 		
 		return root;
+	}
+	
+	@Override
+	public void onResume() {
+		Log.w(this.getClass().getName(), "onResume");
+		super.onResume();
+		updateData();
 	}
 	
 	public PricesFragment() {

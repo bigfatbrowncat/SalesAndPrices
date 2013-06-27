@@ -8,11 +8,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class PricesDBHelper extends SQLiteOpenHelper {
+public class PricesDatabaseHelper extends SQLiteOpenHelper {
 
 	// Database
 	private static final String DATABASE_NAME = "Prices.db";
-	private static final int DATABASE_VERSION = 5;
+	private static final int DATABASE_VERSION = 8;
 
 	// Tables
 	private static final String TABLE_PRICES = "prices";
@@ -28,39 +28,39 @@ public class PricesDBHelper extends SQLiteOpenHelper {
 	private static final String COLUMN_EXCLUSIVE = "exclusive";
 	private static final String COLUMN_QUANTITY = "quantity";
 
-	private static final String QUERY_CREATE_TABLE_PRICES = "create table if not exists "
-			+ TABLE_PRICES
-			+ " "
+	private static final String QUERY_CREATE_TABLE_PRICES = 
+			"create table if not exists " + TABLE_PRICES + " "
 			+ "("
-			+ COLUMN_ID
-			+ " integer primary key, "
-			+ COLUMN_CREATION_DATETIME
-			+ " integer, "
-			+ COLUMN_NAME
-			+ " text, "
-			+ COLUMN_DESCRIPTION
-			+ " text, "
-			+ COLUMN_DESCR_CUT
-			+ " text, "
-			+ COLUMN_PRICE + " integer," + COLUMN_EXCLUSIVE + " integer" + ")";
+				+ COLUMN_ID	+ " integer primary key, "
+				+ COLUMN_CREATION_DATETIME + " integer, "
+				+ COLUMN_NAME + " text, "
+				+ COLUMN_DESCRIPTION + " text, "
+				+ COLUMN_DESCR_CUT + " text, "
+				+ COLUMN_PRICE + " integer," 
+				+ COLUMN_EXCLUSIVE + " integer" 
+			+ ")";
 
-	private static final String QUERY_CREATE_TABLE_CART = "create table if not exists "
-			+ TABLE_PRICES
-			+ " "
+	private static final String QUERY_CREATE_TABLE_CART = 
+			"create table if not exists " + TABLE_CART + " "
 			+ "("
-			+ COLUMN_ID
-			+ " integer primary key, "
-			+ COLUMN_QUANTITY + " integer" + ")";
+				+ COLUMN_ID + " integer primary key, "
+				+ COLUMN_QUANTITY + " integer" 
+			+ ")";
 
-	private static final String QUERY_UPDATE = "drop table if exists "
-			+ TABLE_PRICES + "; " + "drop table if exists " + TABLE_CART;
-
+	private static final String QUERY_DROP_TABLE_PRICES = 
+			  "drop table if exists " + TABLE_PRICES; 
+	private static final String QUERY_DROP_TABLE_CART = 
+			  "drop table if exists " + TABLE_CART;
+	private static final String QUERY_REMOVE_ALL_FROM_CART =
+	          "delete from " + TABLE_CART;
+	
+	
 	protected void createTables(SQLiteDatabase db) {
 		db.execSQL(QUERY_CREATE_TABLE_PRICES);
 		db.execSQL(QUERY_CREATE_TABLE_CART);
 	}
 
-	public PricesDBHelper(Context context) {
+	public PricesDatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
@@ -71,10 +71,24 @@ public class PricesDBHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL(QUERY_UPDATE);
+		clearDatabase(db);
 		createTables(db);
 	}
 
+	public void recreateDatabase()
+	{
+		SQLiteDatabase db = getWritableDatabase();
+		try
+		{
+			clearDatabase(db);
+			createTables(db);
+		}
+		finally
+		{
+			db.close();
+		}
+	}
+	
 	public void insertProduct(Product product) {
 		SQLiteDatabase db = getWritableDatabase();
 
@@ -85,7 +99,7 @@ public class PricesDBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_NAME, product.getName());
 		cv.put(COLUMN_DESCRIPTION, product.getDescription());
 		cv.put(COLUMN_DESCR_CUT, product.getDescrCut());
-		cv.put(COLUMN_PRICE, product.getPrice());
+		cv.put(COLUMN_PRICE, product.getPrice().getValue());
 		cv.put(COLUMN_EXCLUSIVE, product.isExclusive() ? 1 : 0);
 
 		db.insert(TABLE_PRICES, null, cv);
@@ -101,7 +115,7 @@ public class PricesDBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_NAME, product.getName());
 		cv.put(COLUMN_DESCRIPTION, product.getDescription());
 		cv.put(COLUMN_DESCR_CUT, product.getDescrCut());
-		cv.put(COLUMN_PRICE, product.getPrice());
+		cv.put(COLUMN_PRICE, product.getPrice().getValue());
 		cv.put(COLUMN_EXCLUSIVE, product.isExclusive());
 
 		db.update(TABLE_PRICES, cv, COLUMN_ID + " = ?",
@@ -183,10 +197,11 @@ public class PricesDBHelper extends SQLiteOpenHelper {
 					null, null, null);
 			try {
 				if (cur != null) {
+					if (cur.getCount() == 0) return null;
 					cur.moveToFirst();
 					return new Product(cur.getLong(0),
 							new Date(cur.getLong(1)), cur.getString(2),
-							cur.getString(3), cur.getString(4), cur.getInt(5),
+							cur.getString(3), cur.getString(4), new Price(cur.getInt(5)),
 							cur.getInt(6) > 0);
 				} else {
 					throw new PricesDatabaseException("Can't create a cursor");
@@ -246,5 +261,82 @@ public class PricesDBHelper extends SQLiteOpenHelper {
 			throws PricesDatabaseException {
 		return getProductIdsBy(COLUMN_CREATION_DATETIME + " > "
 				+ moment.getTime());
+	}
+	
+	public Long[] getProductIdsInCart() throws PricesDatabaseException
+	{
+		SQLiteDatabase db = getReadableDatabase();
+		try {
+			Cursor cur = db.query(TABLE_CART, new String[] { COLUMN_ID }, null, null, null, null, null);
+			try {
+				if (cur != null) {
+					Long[] res = new Long[cur.getCount()];
+
+					cur.moveToFirst();
+
+					int i = 0;
+					while (!cur.isAfterLast()) {
+						res[i] = cur.getLong(0);
+						cur.moveToNext();
+						i++;
+					}
+					cur.close();
+
+					return res;
+
+				} else {
+					throw new PricesDatabaseException("Can't create a cursor");
+				}
+			} finally {
+				if (cur != null)
+					cur.close();
+			}
+		} finally {
+			db.close();
+		}		
+	}
+	
+	public Integer getProductQuantityFromCart(long productId) throws PricesDatabaseException
+	{
+		SQLiteDatabase db = getReadableDatabase();
+		try {
+			Cursor cur = db.query(TABLE_CART, new String[] { COLUMN_QUANTITY },
+					COLUMN_ID +" = ?", new String[] { String.valueOf(productId) }, null, null, null);
+			try {
+				if (cur != null) {
+					if (cur.getCount() == 0) return null;
+
+					cur.moveToFirst();
+					int res = cur.getInt(0);
+					cur.close();
+
+					return res;
+				} else {
+					throw new PricesDatabaseException("Can't create a cursor");
+				}
+			} finally {
+				if (cur != null)
+					cur.close();
+			}
+		} finally {
+			db.close();
+		}
+	}
+
+	public void clearDatabase(SQLiteDatabase db) {
+		db.execSQL(QUERY_DROP_TABLE_PRICES);
+		db.execSQL(QUERY_DROP_TABLE_CART);
+	}
+
+	public void deliverCart() {
+		SQLiteDatabase db = getWritableDatabase();
+		try
+		{
+			db.execSQL(QUERY_REMOVE_ALL_FROM_CART);
+		}
+		finally
+		{
+			db.close();
+		}
 	}
 }

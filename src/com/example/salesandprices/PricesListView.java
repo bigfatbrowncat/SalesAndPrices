@@ -1,22 +1,30 @@
 package com.example.salesandprices;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.example.salesandprices.ProductContextMenuDialogFragment.OnAddToCartSelectedListener;
+import com.example.salesandprices.ProductContextMenuDialogFragment.OnShowcaseSelectedListener;
+
 public class PricesListView extends ListView {
 
-	private void showcase(Long productId)
+	private OnAddToCartSelectedListener addToCartListener;
+	private OnShowcaseSelectedListener showcaseSelectedListener;
+	
+	public void setOnAddToCartSelectedListener(OnAddToCartSelectedListener listener)
 	{
-		Intent showcaseIntent = new Intent(getContext(), ProductShowcaseActivity.class);
-		showcaseIntent.putExtra("productId", productId);
-		getContext().startActivity(showcaseIntent);
+		addToCartListener = listener;
 	}
-
+	
+	public void setOnShowcaseSelectedListener(OnShowcaseSelectedListener listener)
+	{
+		showcaseSelectedListener = listener;
+	}
+	
 	private OnItemLongClickListener itemLongClickListener = new OnItemLongClickListener() {
 		public boolean onItemLongClick(android.widget.AdapterView<?> arg0, android.view.View view, int position, long id)
 		{
@@ -24,21 +32,12 @@ public class PricesListView extends ListView {
 
 			final Long productId = (Long) getItemAtPosition(position);
 			
-			AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-			builder.setItems(R.array.product_context_menu_items, new DialogInterface.OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if (which == 0)
-					{
-						showcase(productId);
-					}
-				}
-				
-
-			});
-			AlertDialog menu = builder.create();
-			menu.show();
+			ProductContextMenuDialogFragment menuDialogFragment = ProductContextMenuDialogFragment.newInstance(productId);
+			menuDialogFragment.setOnShowcaseSelectedListener(showcaseSelectedListener);
+			menuDialogFragment.setOnAddToCartListener(addToCartListener);
+			
+			FragmentManager fragmentManager = ((FragmentActivity)PricesListView.this.getContext()).getSupportFragmentManager();
+			menuDialogFragment.show(fragmentManager, "priceListContextMenu");
 			
 			return true;
 		}
@@ -48,7 +47,10 @@ public class PricesListView extends ListView {
 		public void onItemClick(android.widget.AdapterView<?> arg0, android.view.View arg1, int position, long id)
 		{
 			final Long productId = (Long) getItemAtPosition(position);
-			showcase(productId);
+			if (productId != null)
+			{
+				showcaseSelectedListener.onShowcaseSelected(productId);
+			}
 		}
 	};
 	

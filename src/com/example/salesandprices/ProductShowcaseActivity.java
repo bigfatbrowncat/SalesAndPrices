@@ -3,18 +3,58 @@ package com.example.salesandprices;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ProductShowcaseActivity extends Activity {
 	
-	TextView productNameTextView;
-	TextView productDescriptionTextView;
-	TextView productExclusiveTextView;
-	TextView productNewTextView;
+	private long productId;
 	
-	ImageView productExclusiveImageView;
-	ImageView productNewImageView;
+	private TextView productNameTextView;
+	private TextView productDescriptionTextView;
+	private TextView productExclusiveTextView;
+	private TextView productNewTextView;
+	
+	private ImageView productExclusiveImageView;
+	private ImageView productNewImageView;
+	
+	private EditText quantityEditText;
+	private Button addToCartButton;
+	
+	private OnClickListener addToCartClickListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View view) {
+			int quantityEntered;
+			try
+			{
+				quantityEntered = Integer.parseInt(quantityEditText.getText().toString());
+			}
+			catch (NumberFormatException e) {
+				quantityEntered = 0;
+			}
+				
+			if (quantityEntered > 0)
+			{
+				PricesDataManager pricesDataManager = new PricesDataManager(ProductShowcaseActivity.this);
+				try
+				{
+					pricesDataManager.addToCart(productId, quantityEntered);
+					finish();
+				} catch (PricesDatabaseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				finally
+				{
+					if (pricesDataManager != null) pricesDataManager.close();
+				}
+			}
+		}
+	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,10 +69,16 @@ public class ProductShowcaseActivity extends Activity {
 		productExclusiveImageView = (ImageView)findViewById(R.id.product_exclusive_image_view);
 		productNewImageView = (ImageView)findViewById(R.id.product_new_image_view);
 		
-		long productId = getIntent().getLongExtra("productId", -1);
+		quantityEditText = (EditText)findViewById(R.id.quantity_edit_text);
+		quantityEditText.setText("1");
+		
+		addToCartButton = (Button)findViewById(R.id.add_to_cart_button);
+		addToCartButton.setOnClickListener(addToCartClickListener);
+		
+		productId = getIntent().getLongExtra("productId", -1);
 		if (productId > -1)
 		{
-			PricesDBHelper pricesDBHelper = new PricesDBHelper(this);
+			PricesDatabaseHelper pricesDBHelper = new PricesDatabaseHelper(this);
 			try
 			{
 				Product product = pricesDBHelper.getProductById(productId);
@@ -69,6 +115,10 @@ public class ProductShowcaseActivity extends Activity {
 			{
 				if (pricesDBHelper != null) pricesDBHelper.close();
 			}
+		}
+		else
+		{
+			finish();
 		}
 	}
 }

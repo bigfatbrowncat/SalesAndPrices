@@ -8,7 +8,7 @@ public class Product /*implements Parcelable*/ {
 	private String name;
 	private String description;
 	private String descrCut;
-	private int price;
+	private Price price;
 	private boolean exclusive;
 
 
@@ -45,7 +45,7 @@ public class Product /*implements Parcelable*/ {
 		exclusive = in.readByte() > 0;
 	}*/
 	
-	public Product(long id, Date creationDateTime, String name, String description, String descrCut, int price, boolean exclusive) {
+	public Product(long id, Date creationDateTime, String name, String description, String descrCut, Price price, boolean exclusive) {
 		this.id = id;
 		this.creationDateTime = creationDateTime;
 		this.name = name;
@@ -79,11 +79,11 @@ public class Product /*implements Parcelable*/ {
 		this.descrCut = descrCut;
 	}
 	
-	public int getPrice() {
+	public Price getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(Price price) {
 		this.price = price;
 	}
 

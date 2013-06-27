@@ -9,7 +9,7 @@
     <string name="add_to_cart_button">Add to cart</string>
     <string name="this_is_exclusive">This product is exclusive</string>
     <string name="this_product_is_new">This product is a new offer</string>
-    <string name="pcs">pcs.</string>
+    <string name="pcs"> pcs.</string>
     <string name="title_activity_update_data">Updating data</string>
     <string name="updating_data">Updating data. Please wait&#8230;</string>
     <string-array name="product_context_menu_items">
@@ -17,5 +17,7 @@
         <item >Add to cart</item>
     </string-array>
         <string name="product_showcase_activity_title">Product showcase</string>
+        <string name="action_recreate_database">Recreate database</string>
+        <string name="your_price_is">"Your price is: "</string>
 
 </resources>
